@@ -65,7 +65,7 @@ class MNIST(dsets.MNIST):
         label_idx = self.repeated_label_indices[idx]
         label_img, label_target = self.data[label_idx], self.targets[label_idx]
         label_img = np.asarray(label_img)
-        print(type(label_img))
+        # print(type(label_img))
         label_img = Image.fromarray(label_img)
         
 
@@ -147,7 +147,7 @@ class FMNIST(dsets.FashionMNIST):
         label_idx = self.repeated_label_indices[idx]
         label_img, label_target = self.data[label_idx], self.targets[label_idx]
         label_img = np.asarray(label_img)
-        print(type(label_img))
+        # print(type(label_img))
         label_img = Image.fromarray(label_img)
         
 
