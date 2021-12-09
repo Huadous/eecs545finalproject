@@ -3,7 +3,7 @@ from os.path import join, isfile
 import torch.nn.functional as F
 from torch.optim import SGD
 from torch.distributions import Beta
-from tensorboardX import SummaryWriter
+# from tensorboardX import SummaryWriter
 
 from dataloader import dataloader1
 from utils import make_folder, AverageMeter, Logger, accuracy, save_checkpoint, compute_weight
