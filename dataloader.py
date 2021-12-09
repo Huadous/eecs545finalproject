@@ -88,46 +88,6 @@ class MNIST(dsets.MNIST):
         else:
             return label_img, label_target
 
-
-# class iNaturalist(dsets.inaturalist.INaturalist):
-#     num_classes = 11
-#     def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
-#         super(iNaturalist, self).__init__(**kwargs)
-#         labels_per_class = num_labels // self.num_classes
-#         self.return_unlabel = return_unlabel
-
-#         self.label_indices, self.unlabel_indices = get_class_balanced_labels(self.target, labels_per_class, save_path)
-#         self.repeated_label_indices = get_repeated_indices(self.label_indices, num_iters, batch_size)
-#         if self.return_unlabel:
-#             self.repeated_unlabel_indices = get_repeated_indices(self.unlabel_indices, num_iters, batch_size)
-
-#     def __len__(self):
-#         return len(self.repeated_label_indices)
-
-#     def __getitem__(self, idx):
-#         label_idx = self.repeated_label_indices[idx]
-#         label_img, label_target = self.data[label_idx], int(self.labels[label_idx])
-#         label_img = Image.fromarray(np.transpose(label_img, (1, 2, 0)))
-
-#         if self.transform is not None:
-#             label_img = self.transform(label_img)
-#         if self.target_transform is not None:
-#             label_target = self.target_transform(label_target)
-
-#         if self.return_unlabel:
-#             unlabel_idx = self.repeated_unlabel_indices[idx]
-#             unlabel_img, unlabel_target = self.data[unlabel_idx], int(self.labels[unlabel_idx])
-#             unlabel_img = Image.fromarray(np.transpose(unlabel_img, (1, 2, 0)))
-
-#             if self.transform is not None:
-#                 unlabel_img = self.transform(unlabel_img)
-#             if self.target_transform is not None:
-#                 unlabel_target = self.target_transform(unlabel_target)
-#             return label_img, label_target, unlabel_img, unlabel_target
-#         else:
-#             return label_img, label_target
-
-
 class FMNIST(dsets.FashionMNIST):
     num_classes = 10
     def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
@@ -208,123 +168,6 @@ class STL10(dsets.STL10):
         else:
             return label_img, label_target
 
-
-class LFW(dsets.LFWPeople):
-    num_classes = 5749
-    def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
-        super(LFW, self).__init__(**kwargs)
-        labels_per_class = num_labels // self.num_classes
-        self.return_unlabel = return_unlabel
-
-        self.label_indices, self.unlabel_indices = get_class_balanced_labels(self.targets, labels_per_class, save_path)
-        self.repeated_label_indices = get_repeated_indices(self.label_indices, num_iters, batch_size)
-        if self.return_unlabel:
-            self.repeated_unlabel_indices = get_repeated_indices(self.unlabel_indices, num_iters, batch_size)
-
-    def __len__(self):
-        return len(self.repeated_label_indices)
-
-    def __getitem__(self, idx):
-        label_idx = self.repeated_label_indices[idx]
-        label_img, label_target = self.data[label_idx], self.targets[label_idx]
-        label_img = Image.fromarray(np.transpose(label_img, (1, 2, 0)))
-
-        if self.transform is not None:
-            label_img = self.transform(label_img)
-        if self.target_transform is not None:
-            label_target = self.target_transform(label_target)
-
-        if self.return_unlabel:
-            unlabel_idx = self.repeated_unlabel_indices[idx]
-            unlabel_img, unlabel_target = self.data[unlabel_idx], self.targets[label_idx]
-            unlabel_img = Image.fromarray(np.transpose(unlabel_img, (1, 2, 0)))
-
-            if self.transform is not None:
-                unlabel_img = self.transform(unlabel_img)
-            if self.target_transform is not None:
-                unlabel_target = self.target_transform(unlabel_target)
-            return label_img, label_target, unlabel_img, unlabel_target
-        else:
-            return label_img, label_target
-
-# class KITTI(dsets.Kitti):
-#     num_classes = 29
-#     def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
-#         super(KITTI, self).__init__(**kwargs)
-#         labels_per_class = num_labels // self.num_classes
-#         self.return_unlabel = return_unlabel
-#         # print(">>>>>>>>>>>>>>>>>>>" + str(self.targets))
-#         self.label_indices, self.unlabel_indices = get_class_balanced_labels(self.labels, labels_per_class, save_path)
-#         self.repeated_label_indices = get_repeated_indices(self.label_indices, num_iters, batch_size)
-#         if self.return_unlabel:
-#             self.repeated_unlabel_indices = get_repeated_indices(self.unlabel_indices, num_iters, batch_size)
-
-#     def __len__(self):
-#         return len(self.repeated_label_indices)
-
-#     def __getitem__(self, idx):
-#         label_idx = self.repeated_label_indices[idx]
-#         label_img, label_target = self.data[label_idx], int(self.labels[label_idx])
-        
-#         label_img = Image.fromarray(np.transpose(label_img, (1, 2, 0)))
-
-#         if self.transform is not None:
-#             label_img = self.transform(label_img)
-#         if self.target_transform is not None:
-#             label_target = self.target_transform(label_target)
-
-#         if self.return_unlabel:
-#             unlabel_idx = self.repeated_unlabel_indices[idx]
-#             unlabel_img, unlabel_target = self.data[unlabel_idx], int(self.labels[unlabel_idx])
-#             unlabel_img = Image.fromarray(np.transpose(unlabel_img, (1, 2, 0)))
-
-#             if self.transform is not None:
-#                 unlabel_img = self.transform(unlabel_img)
-#             if self.target_transform is not None:
-#                 unlabel_target = self.target_transform(unlabel_target)
-#             return label_img, label_target, unlabel_img, unlabel_target
-#         else:
-#             return label_img, label_target
-
-class KITTI(dsets.Kitti):
-    num_classes = 29
-    def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
-        super(KITTI, self).__init__(**kwargs)
-        labels_per_class = num_labels // self.num_classes
-        self.return_unlabel = return_unlabel
-        # print(">>>>>>>>>>>>>>>>>>>" + str(self.targets))
-        self.label_indices, self.unlabel_indices = get_class_balanced_labels(self.labels, labels_per_class, save_path)
-        self.repeated_label_indices = get_repeated_indices(self.label_indices, num_iters, batch_size)
-        if self.return_unlabel:
-            self.repeated_unlabel_indices = get_repeated_indices(self.unlabel_indices, num_iters, batch_size)
-
-    def __len__(self):
-        return len(self.repeated_label_indices)
-
-    def __getitem__(self, idx):
-        label_idx = self.repeated_label_indices[idx]
-        label_img, label_target = self.data[label_idx], int(self.labels[label_idx])
-        
-        label_img = Image.fromarray(np.transpose(label_img, (1, 2, 0)))
-
-        if self.transform is not None:
-            label_img = self.transform(label_img)
-        if self.target_transform is not None:
-            label_target = self.target_transform(label_target)
-
-        if self.return_unlabel:
-            unlabel_idx = self.repeated_unlabel_indices[idx]
-            unlabel_img, unlabel_target = self.data[unlabel_idx], int(self.labels[unlabel_idx])
-            unlabel_img = Image.fromarray(np.transpose(unlabel_img, (1, 2, 0)))
-
-            if self.transform is not None:
-                unlabel_img = self.transform(unlabel_img)
-            if self.target_transform is not None:
-                unlabel_target = self.target_transform(unlabel_target)
-            return label_img, label_target, unlabel_img, unlabel_target
-        else:
-            return label_img, label_target
-
 train_transform = {
         'mnist': transforms.Compose([
                 transforms.RandomCrop(32, padding=4),
@@ -339,26 +182,7 @@ train_transform = {
                 transforms.ToTensor()
                 # transforms.Normalize(*meanstd['cifar10'])
         ]),
-        'inaturalist': transforms.Compose([
-                transforms.RandomCrop(32),
-                transforms.RandomHorizontalFlip(),
-                transforms.ToTensor()                                       
-        ]),
         'stl10': transforms.Compose([
-            #   transforms.RandomResizedCrop(256),
-              transforms.RandomHorizontalFlip(),
-            #   transforms.CenterCrop(224),
-              transforms.ToTensor(),
-            #   transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0.224, 0.225])
-        ]),
-        'kitti': transforms.Compose([
-            #   transforms.RandomResizedCrop(256),
-              transforms.RandomHorizontalFlip(),
-            #   transforms.CenterCrop(224),
-              transforms.ToTensor(),
-            #   transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0.224, 0.225])
-        ]),
-        'lfw': transforms.Compose([
             #   transforms.RandomResizedCrop(256),
               transforms.RandomHorizontalFlip(),
             #   transforms.CenterCrop(224),
@@ -373,36 +197,28 @@ train_dset = {
         'mnist': MNIST,
         'fmnist': FMNIST,
         'stl10': STL10,
-        'kitti': KITTI,
-        'lfw': LFW,
         }
 
 test_dset = {
         'mnist': dsets.MNIST,
         'fmnist': dsets.FashionMNIST,
         'stl10': dsets.STL10,
-        'kitti': dsets.Kitti,
-        'Lfw':dsets.LFWPeople,
         }
 
 train_kwargs = {
         'mnist': {'train': True, 'download': True},
         'fmnist': {'train': True, 'download': True},
         'stl10': {'split': 'train', 'download': True},
-        'kitti': {'train': True, 'download': True},
-        'lfw': {'split': 'train', 'download': True},
         }
 
 test_kwargs = {
         'mnist': {'train': False, 'download': True},
         'fmnist': {'train': False, 'download': True},
         'stl10': {'split': 'test', 'download': True},
-        'kitti': {'train': False, 'download': True},
-        'lfw': {'split': 'test', 'download': True},
         }
 
 def dataloader1(dset, path, bs, num_workers, num_labels, num_iters, return_unlabel=True, save_path=None):
-    assert dset in ["mnist", "fmnist", "inaturalist", "stl10", "kitti", 'lfw']
+    assert dset in ["mnist", "fmnist", "stl10"]
 
     train_dataset = train_dset[dset](
             root = path,
@@ -416,10 +232,20 @@ def dataloader1(dset, path, bs, num_workers, num_labels, num_iters, return_unlab
     )
     train_loader = DataLoader(train_dataset, batch_size=bs, num_workers=num_workers, shuffle=False)
 
-    test_transform = transforms.Compose([
+    test_transform = {
+        'mnist': transforms.Compose([
+                transforms.RandomCrop(32, padding=4),
+                transforms.ToTensor()
+        ]),
+        'fmnist': transforms.Compose([
+                transforms.RandomCrop(32, padding=4),
+                transforms.ToTensor()
+        ]),
+        'stl10': transforms.Compose([
             transforms.ToTensor()
-            # transforms.Normalize(*meanstd[dset])
-    ])
+        ])
+    }
+    
     test_dataset = test_dset[dset](root=path, transform=test_transform, **test_kwargs[dset])
     test_loader = DataLoader(test_dataset, batch_size=100, num_workers=num_workers, shuffle=False)
 
