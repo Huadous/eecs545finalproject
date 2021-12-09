@@ -182,6 +182,9 @@ def main():
                 if args.gpu:
                     alpha = alpha.cuda()
                 _alpha = alpha.view(-1, 1, 1, 1)
+                print(alpha.shape)
+                print(label_img.shape)
+                print(unlabel_img.shape)
                 interp_img = (label_img * _alpha + unlabel_img * (1. - _alpha)).detach()
                 interp_pseudo_gt = (_label_gt * alpha + unlabel_pseudo_gt * (1. - alpha)).detach()
             interp_pred = model(interp_img)
