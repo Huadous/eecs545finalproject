@@ -90,15 +90,42 @@ class MNIST(dsets.MNIST):
 
 
 class iNaturalist(dsets.inaturalist.INaturalist):
+    num_classes = 10
     def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
-        super(iNaturalist, self).__init__(**kwargs)
-        # labels_per_class = num_labels // self.num_classes
-        # self.return_unlabel = return_unlabel
+        super(STL10, self).__init__(**kwargs)
+        labels_per_class = num_labels // self.num_classes
+        self.return_unlabel = return_unlabel
 
-        # self.label_indices, self.unlabel_indices = get_class_balanced_labels(self.targets, labels_per_class, save_path)
-        # self.repeated_label_indices = get_repeated_indices(self.label_indices, num_iters, batch_size)
-        # if self.return_unlabel:
-        #     self.repeated_unlabel_indices = get_repeated_indices(self.unlabel_indices, num_iters, batch_size)
+        self.label_indices, self.unlabel_indices = get_class_balanced_labels(self.labels, labels_per_class, save_path)
+        self.repeated_label_indices = get_repeated_indices(self.label_indices, num_iters, batch_size)
+        if self.return_unlabel:
+            self.repeated_unlabel_indices = get_repeated_indices(self.unlabel_indices, num_iters, batch_size)
+
+    def __len__(self):
+        return len(self.repeated_label_indices)
+
+    def __getitem__(self, idx):
+        label_idx = self.repeated_label_indices[idx]
+        label_img, label_target = self.data[label_idx], int(self.labels[label_idx])
+        label_img = Image.fromarray(np.transpose(label_img, (1, 2, 0)))
+
+        if self.transform is not None:
+            label_img = self.transform(label_img)
+        if self.target_transform is not None:
+            label_target = self.target_transform(label_target)
+
+        if self.return_unlabel:
+            unlabel_idx = self.repeated_unlabel_indices[idx]
+            unlabel_img, unlabel_target = self.data[unlabel_idx], int(self.labels[unlabel_idx])
+            unlabel_img = Image.fromarray(np.transpose(unlabel_img, (1, 2, 0)))
+
+            if self.transform is not None:
+                unlabel_img = self.transform(unlabel_img)
+            if self.target_transform is not None:
+                unlabel_target = self.target_transform(unlabel_target)
+            return label_img, label_target, unlabel_img, unlabel_target
+        else:
+            return label_img, label_target
 
 class STL10(dsets.STL10):
     num_classes = 10
