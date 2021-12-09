@@ -246,7 +246,7 @@ def dataloader1(dset, path, bs, num_workers, num_labels, num_iters, return_unlab
         ])
     }
     
-    test_dataset = test_dset[dset](root=path, transform=test_transform, **test_kwargs[dset])
+    test_dataset = test_dset[dset](root=path, transform=test_transform[dset], **test_kwargs[dset])
     test_loader = DataLoader(test_dataset, batch_size=100, num_workers=num_workers, shuffle=False)
 
     return iter(train_loader), test_loader
