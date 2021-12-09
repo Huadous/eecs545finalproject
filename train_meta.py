@@ -3,7 +3,7 @@ from os.path import join, isfile
 import torch.nn.functional as F
 from torch.optim import SGD
 from torch.distributions import Beta
-# from tensorboardX import SummaryWriter
+from tensorboardX import SummaryWriter
 
 from dataloader import dataloader1
 from utils import make_folder, AverageMeter, Logger, accuracy, save_checkpoint, compute_weight
@@ -11,7 +11,7 @@ from model import ConvLarge
 
 parser = argparse.ArgumentParser()
 # Basic configuration
-parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'caltech256', 'svhn'])
+parser.add_argument('--dataset', type=str, default='mnist', choices=["mnist", "inaturalist", "stl10"])
 parser.add_argument('--data-path', type=str, default='./data', help='Data path')
 parser.add_argument('--num-label', type=int, default=4000, help='Number of labeled data')
 parser.add_argument('-a', '--architecture', type=str, default='convlarge', choices=['convlarge', 'vgg16'], help='Network architecture')
