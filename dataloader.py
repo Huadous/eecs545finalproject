@@ -92,7 +92,7 @@ class MNIST(dsets.MNIST):
 class iNaturalist(dsets.inaturalist.INaturalist):
     num_classes = 11
     def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
-        super(STL10, self).__init__(**kwargs)
+        super(iNaturalist, self).__init__(**kwargs)
         labels_per_class = num_labels // self.num_classes
         self.return_unlabel = return_unlabel
 
