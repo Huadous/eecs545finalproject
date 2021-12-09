@@ -4,8 +4,10 @@ import torch.nn.functional as F
 from torch.optim import SGD
 from torch.distributions import Beta
 from tensorboardX import SummaryWriter
+import torchvision
 
 from dataloader import dataloader1
+import dataloader
 from utils import make_folder, AverageMeter, Logger, accuracy, save_checkpoint, compute_weight
 from model import ConvLarge
 
@@ -68,12 +70,14 @@ train_loader, test_loader = dataloader1(
         save_path = args.save_path
 )
 
+kwargs = {'num_classes': dataloader.train_dset[args.dataset].num_classes}
+
 # Build model and optimizer
 logger.info("Building model and optimizer...")
 if args.architecture == "convlarge":
     model = ConvLarge(num_classes=args.num_classes)
 elif args.architecture == "vgg16":
-    model = torch.hub.load('pytorch/vision:v0.10.0', 'vgg16', pretrained = False)
+    model = torchvision.models.vgg16(pretrained = False, progress=True, **kwargs)
 if args.gpu:
     model.cuda()
 optimizer = SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
