@@ -5,6 +5,7 @@ from torch.optim import SGD
 from torch.distributions import Beta
 from tensorboardX import SummaryWriter
 import torchvision
+import modified_vgg
 
 from dataloader import dataloader1
 import dataloader
@@ -76,8 +77,10 @@ kwargs = {'num_classes': dataloader.train_dset[args.dataset].num_classes}
 logger.info("Building model and optimizer...")
 if args.architecture == "convlarge":
     model = ConvLarge(num_classes=args.num_classes)
-elif args.architecture == "vgg16":
+elif args.architecture == "vgg16" and args.dataset == "lst10":
     model = torchvision.models.vgg11(pretrained = False, progress=True, **kwargs)
+elif args.architecture == "vgg16":
+    model = modified_vgg.vgg11(pretrained = False, progress=True, **kwargs)
 if args.gpu:
     model.cuda()
 optimizer = SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)

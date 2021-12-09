@@ -170,7 +170,6 @@ class FMNIST(dsets.FashionMNIST):
         else:
             return label_img, label_target
 
-
 class STL10(dsets.STL10):
     num_classes = 10
     def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
