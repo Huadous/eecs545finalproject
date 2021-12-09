@@ -251,14 +251,14 @@ test_dset = {
 
 train_kwargs = {
         'mnist': {'train': True, 'download': True},
-        'inaturalist': {'version': '2021_train_mini', 'target_type': 'class', 'train': True, 'download': True},
+        'inaturalist': {'version': '2021_train_mini', 'target_type': 'class', 'download': True},
         'stl10': {'split': 'train', 'download': True},
         'lsun': {'classes': 'train'},
         }
 
 test_kwargs = {
         'mnist': {'train': False, 'download': True},
-        'inaturalist': {'version': '2021_train_mini', 'target_type': 'class', 'train': True, 'download': True},
+        'inaturalist': {'version': '2021_train_mini', 'target_type': 'class', 'download': True},
         'stl10': {'split': 'test', 'download': True},
         'lsun': {'classes': 'train'},
         }
