@@ -327,8 +327,8 @@ class KITTI(dsets.Kitti):
 
 train_transform = {
         'mnist': transforms.Compose([
-                # transforms.RandomCrop(32, padding=4),
-                transforms.Resize(84),
+                transforms.RandomCrop(32, padding=4),
+                # transforms.Resize(84),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor()
                 # transforms.Normalize(*meanstd['cifar10'])
