@@ -90,7 +90,7 @@ class MNIST(dsets.MNIST):
 
 
 class iNaturalist(dsets.inaturalist.INaturalist):
-    num_classes = 10
+    num_classes = 11
     def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
         super(STL10, self).__init__(**kwargs)
         labels_per_class = num_labels // self.num_classes
@@ -167,7 +167,7 @@ class STL10(dsets.STL10):
 
 
 class LSUN(dsets.LSUN):
-    num_classes = 10
+    num_classes = 29
     def __init__(self, num_labels, num_iters, batch_size, return_unlabel=True, save_path=None, **kwargs):
         super(LSUN, self).__init__(**kwargs)
         labels_per_class = num_labels // self.num_classes
