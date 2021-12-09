@@ -112,6 +112,9 @@ class STL10(dsets.STL10):
         if self.return_unlabel:
             self.repeated_unlabel_indices = get_repeated_indices(self.unlabel_indices, num_iters, batch_size)
 
+    def __len__(self):
+        return len(self.repeated_label_indices)
+
     def __getitem__(self, idx):
         label_idx = self.repeated_label_indices[idx]
         label_img, label_target = self.data[label_idx], int(self.labels[label_idx])
@@ -147,6 +150,9 @@ class LSUN(dsets.LSUN):
         self.repeated_label_indices = get_repeated_indices(self.label_indices, num_iters, batch_size)
         if self.return_unlabel:
             self.repeated_unlabel_indices = get_repeated_indices(self.unlabel_indices, num_iters, batch_size)
+
+    def __len__(self):
+        return len(self.repeated_label_indices)
 
     def __getitem__(self, idx):
         label_idx = self.repeated_label_indices[idx]
