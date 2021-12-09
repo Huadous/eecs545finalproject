@@ -77,7 +77,7 @@ logger.info("Building model and optimizer...")
 if args.architecture == "convlarge":
     model = ConvLarge(num_classes=args.num_classes)
 elif args.architecture == "vgg16":
-    model = torchvision.models.vgg16(pretrained = False, progress=True, **kwargs)
+    model = torchvision.models.vgg11(pretrained = False, progress=True, **kwargs)
 if args.gpu:
     model.cuda()
 optimizer = SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
