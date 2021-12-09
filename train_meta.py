@@ -116,6 +116,7 @@ def main():
     best_acc = 0.
     logger.info("Start training...")
     for step in range(args.start_step, args.total_steps):
+        print(step)
         # Load data and distribute to devices
         data_start = time.time()
         label_img, label_gt, unlabel_img, unlabel_gt = next(train_loader)
