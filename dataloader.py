@@ -206,13 +206,13 @@ def dataloader1(dset, path, bs, num_workers, num_labels, num_iters, return_unlab
 
 train_loader, test_loader = dataloader1(
         dset = 'stl10',
-        path = '/content/drive/MyDrive/EECS545FINAL',
+        path = '/content/drive/MyDrive/eecs545dataset',
         bs = 1024,
         num_workers = 8,
         num_labels = 2000,
         num_iters = 40000,
         return_unlabel = True,
-        save_path = '/content/drive/MyDrive/EECS545FINAL'
+        save_path = '/content/drive/MyDrive/eecs545dataset'
 )
 
 a,b,c,d = next(train_loader)
