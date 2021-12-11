@@ -91,7 +91,7 @@ def update_learning_rate_and_weight():
 
 
 def delta_theta_labeled():
-    return torch.autograd.grad(labeled_loss, model.parameters(), only_inputs=True)
+    return torch.autograd.grad(labeled_loss_iter, model.parameters(), only_inputs=True)
 
 
 @torch.no_grad()
