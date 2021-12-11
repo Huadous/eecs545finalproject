@@ -166,7 +166,6 @@ def dataloader(dset, path, iteration, num_labels=4000, bs=100, save_path=None):
         iteration=iteration,
         bs=bs,
         transform=parameters.train_transform[dset],
-        save_path=save_path,
         **parameters.train_kwargs[dset]
     )
 
