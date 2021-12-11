@@ -8,45 +8,35 @@ import parameters
 
 from tqdm import tqdm
 
-def get_class_balanced_labels(targets, labels_per_class, save_path):
-    num_classes = 10
+# def get_class_balanced_labels(targets, labels_per_class):
+#     indices = list(range(len(targets)))
+#     random.shuffle(indices)
 
-    indices = list(range(len(targets)))
-    random.shuffle(indices)
+#     label_count = {i: 0 for i in range(10)}
+#     label_indices, unlabel_indices = [], []
+#     for idx in indices:
+#         if label_count[targets[idx].item()] < labels_per_class:
+#             label_indices.append(idx)
+#             label_count[targets[idx].item()] += 1
+#         else:
+#             unlabel_indices.append(idx)
 
-    label_count = {i: 0 for i in range(num_classes)}
-    label_indices, unlabel_indices = [], []
-    for idx in indices:
-        if label_count[targets[idx].item()] < labels_per_class:
-            label_indices.append(idx)
-            label_count[targets[idx].item()] += 1
-        else:
-            unlabel_indices.append(idx)
+#     return label_indices, unlabel_indices
 
-    # with open(join(save_path, 'label_indices.txt'), 'w+') as f:
-    #     for idx in label_indices:
-    #         f.write(str(idx) + '\n')
-
-    return label_indices, unlabel_indices
-
-def get_repeated_indices(indices, num_iters, batch_size):
-    length = num_iters * batch_size
-    num_epochs = length // len(indices) + 1
-    repeated_indices = []
-
-    for epoch in tqdm(range(num_epochs), desc='Pre-allocating indices'):
-        random.shuffle(indices)
-        repeated_indices += indices
-
-    return repeated_indices[:length]
 
 class MNIST(dsets.MNIST):
-    def __init__(self, num_labels,iteration, bs, save_path, **kwargs):
+    def __init__(self, num_labels,iteration, bs, **kwargs):
         super(MNIST, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
-        labeled_index, unlabeled_index = get_class_balanced_labels(
-            self.targets, labels_per_class, save_path)
-
+        shuffled_class_index = random.shuffle(list(range(len(self.targets))))
+        labeled_index, unlabeled_index = [], []
+        counter = [i for i in range(10)]
+        for index in shuffled_class_index:
+            if counter[self.targets[index].item()] < labels_per_class:
+                counter[self.targets[index].item()] += 1
+                labeled_index.append(index)
+            else:
+                unlabeled_index.append(index)
         total_num = iteration * bs
         num_of_labeld = total_num // len(labeled_index) + 1
         num_of_unlabeld = total_num // len(unlabeled_index) + 1
@@ -58,6 +48,7 @@ class MNIST(dsets.MNIST):
             random.shuffle(unlabeled_index)
             self.reformed_unlabeled_index += labeled_index
         self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
+        
 
     def __len__(self):
         return len(self.reformed_labeled_index)
@@ -75,13 +66,18 @@ class MNIST(dsets.MNIST):
 
 
 class FMNIST(dsets.FashionMNIST):
-    def __init__(self, num_labels, iteration, bs, save_path, **kwargs):
+    def __init__(self, num_labels, iteration, bs, **kwargs):
         super(FMNIST, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
-
-        labeled_index, unlabeled_index = get_class_balanced_labels(
-            self.targets, labels_per_class, save_path)
-        
+        shuffled_class_index = random.shuffle(list(range(len(self.targets))))
+        labeled_index, unlabeled_index = [], []
+        counter = [i for i in range(10)]
+        for index in shuffled_class_index:
+            if counter[self.targets[index].item()] < labels_per_class:
+                counter[self.targets[index].item()] += 1
+                labeled_index.append(index)
+            else:
+                unlabeled_index.append(index)
         total_num = iteration * bs
         num_of_labeld = total_num // len(labeled_index) + 1
         num_of_unlabeld = total_num // len(unlabeled_index) + 1
@@ -110,12 +106,18 @@ class FMNIST(dsets.FashionMNIST):
 
 
 class STL10(dsets.STL10):
-    def __init__(self, num_labels, iteration, bs, save_path, **kwargs):
+    def __init__(self, num_labels, iteration, bs, **kwargs):
         super(STL10, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
-
-        labeled_index, unlabeled_index = get_class_balanced_labels(
-            self.labels, labels_per_class, save_path)
+        shuffled_class_index = random.shuffle(list(range(len(self.labels))))
+        labeled_index, unlabeled_index = [], []
+        counter = [i for i in range(10)]
+        for index in shuffled_class_index:
+            if counter[self.labels[index].item()] < labels_per_class:
+                counter[self.labels[index].item()] += 1
+                labeled_index.append(index)
+            else:
+                unlabeled_index.append(index)
         total_num = iteration * bs
         num_of_labeld = total_num // len(labeled_index) + 1
         num_of_unlabeld = total_num // len(unlabeled_index) + 1
