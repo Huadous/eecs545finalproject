@@ -70,7 +70,7 @@ def BatchSampler(data_loader):
         train_loader)
     labeled_class_matrix = F.one_hot(
         labeled_class, num_classes=num_classes).float()
-    return labeled_images.cuda(), labeled_class.cuda(), labeled_class_matrix, unlabeled_images.cuda(), unlabeled_class.cuda()
+    return labeled_images.cuda(), labeled_class.cuda(), labeled_class_matrix.cuda(), unlabeled_images.cuda(), unlabeled_class.cuda()
 
 
 def update_learning_rate_and_weight(iter):
