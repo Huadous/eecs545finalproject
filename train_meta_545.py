@@ -7,7 +7,6 @@ import torch.nn.functional as F
 from torch.optim import SGD
 from torch.distributions import Beta
 import torchvision
-import modified_vgg
 
 from tensorboardX import SummaryWriter
 
@@ -50,9 +49,9 @@ kwargs = {'num_classes': num_classes}
 
 
 if args.model == "scnn":
-    model = SCNN(num_classes=num_classes)
+    model = SCNN(num_classes=num_classes, input_channel=3 if args.dataset == 'stl10' else 1)
 elif args.model == "vgg" and args.dataset == "lst10":
-    model = vgg11(pretrained=False, progress=True, **kwargs)
+    model = torchvision.models.vgg11(pretrained=False, progress=True, **kwargs)
 elif args.model == "vgg":
     model = vgg11(pretrained=False, progress=True, **kwargs)
 model.cuda()
