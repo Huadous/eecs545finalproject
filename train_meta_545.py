@@ -91,6 +91,7 @@ def delta_theta_labeled(labeled_loss):
 def update_pseudo_label(unlabeled_image, dtli, learning_rate):
     unlabeled_prediction = model(unlabeled_image)
     unlabeled_pseudo_class_matrix = F.softmax(unlabeled_prediction, dim=1)
+    unlabeled_pseudo_class_matrix.cuda()
     epsilon = 1e-2 / torch.norm(torch.cat([x.view(-1) for x in dtli]))
 
     for para, theta in zip(model.parameters(), dtli):
@@ -119,6 +120,7 @@ def improved_training_protocol(labeled_image, unlabeled_image, labeled_class_mat
     lambda_i_class = beta_distribution.sample((100,))
     lambda_i_class = lambda_i_class.cuda()
     lambda_i_image = lambda_i_class.view(-1, 1, 1, 1)
+    lambda_i_image = lambda_i_image.cuda()
     interpolate_image = (labeled_image * lambda_i_image +
                          unlabeled_image * (1. - lambda_i_image)).detach()
     interpolate_pseudo_class = (labeled_class_matrix * lambda_i_class +
