@@ -180,19 +180,20 @@ class STL10(dsets.STL10):
             return label_img, label_target
 
 
+train_dset = {
+    'mnist': MNIST,
+    'fmnist': FMNIST,
+    'stl10': STL10,
+}
+
+test_dset = {
+    'mnist': dsets.MNIST,
+    'fmnist': dsets.FashionMNIST,
+    'stl10': dsets.STL10,
+}
+
+
 def dataloader(dset, path, num_iters, num_labels=4000, bs=100, return_unlabel=True, save_path=None):
-    train_dset = {
-        'mnist': MNIST,
-        'fmnist': FMNIST,
-        'stl10': STL10,
-    }
-
-    test_dset = {
-        'mnist': dsets.MNIST,
-        'fmnist': dsets.FashionMNIST,
-        'stl10': dsets.STL10,
-    }
-
     train_dataset = train_dset[dset](
         root=path,
         num_labels=num_labels,
