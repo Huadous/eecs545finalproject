@@ -47,7 +47,7 @@ train_loader, test_loader = dataloader(
     save_path=result_path
 )
 
-kwargs = {'num_classes': dataloader.train_dset[args.dataset].num_classes}
+kwargs = {'num_classes': 10}
 num_classes = dataloader.train_dset[args.dataset].num_classes
 
 
