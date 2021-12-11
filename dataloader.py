@@ -177,13 +177,12 @@ test_dset = {
 }
 
 
-def dataloader(dset, path, num_iters, num_labels=4000, bs=100, return_unlabel=True, save_path=None):
+def dataloader(dset, path, num_iters, num_labels=4000, bs=100, save_path=None):
     train_dataset = train_dset[dset](
         root=path,
         num_labels=num_labels,
         num_iters=num_iters,
         batch_size=bs,
-        return_unlabel=return_unlabel,
         transform=parameters.train_transform[dset],
         save_path=save_path,
         **parameters.train_kwargs[dset]
