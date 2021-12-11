@@ -14,7 +14,7 @@ from tensorboardX import SummaryWriter
 
 from dataloader import dataloader
 from utils import AverageMeter, logger_config, accuracy, save_checkpoint
-from model import ConvLarge
+from model import SCNN, vgg11
 
 import ssl
 
@@ -43,7 +43,6 @@ train_loader, test_loader = dataloader(
     dset=args.dataset,
     path=data_path,
     num_iters=args.iteration,
-    return_unlabel=True,
     save_path=result_path
 )
 
@@ -52,11 +51,11 @@ kwargs = {'num_classes': num_classes}
 
 
 if args.model == "scnn":
-    model = ConvLarge(num_classes=num_classes)
+    model = SCNN(num_classes=num_classes)
 elif args.model == "vgg" and args.dataset == "lst10":
-    model = torchvision.models.vgg11(pretrained=False, progress=True, **kwargs)
+    model = vgg11(pretrained=False, progress=True, **kwargs)
 elif args.model == "vgg":
-    model = modified_vgg.vgg11(pretrained=False, progress=True, **kwargs)
+    model = vgg11(pretrained=False, progress=True, **kwargs)
 model.cuda()
 
 optimizer = SGD(model.parameters(), lr=0.1, momentum=0.9,
