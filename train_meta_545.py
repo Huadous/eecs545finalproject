@@ -43,7 +43,6 @@ train_loader, test_loader = dataloader(
     dset=args.dataset,
     path=data_path,
     iteration=args.iteration,
-    save_path=result_path
 )
 
 num_classes = 10

@@ -28,7 +28,9 @@ class MNIST(dsets.MNIST):
     def __init__(self, num_labels,iteration, bs, **kwargs):
         super(MNIST, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
-        shuffled_class_index = random.shuffle(list(range(len(self.targets))))
+        class_index = list(range(len(self.targets)))
+        random.shuffle(class_index)
+        shuffled_class_index = class_index
         labeled_index, unlabeled_index = [], []
         counter = [i for i in range(10)]
         for index in shuffled_class_index:
@@ -69,7 +71,9 @@ class FMNIST(dsets.FashionMNIST):
     def __init__(self, num_labels, iteration, bs, **kwargs):
         super(FMNIST, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
-        shuffled_class_index = random.shuffle(list(range(len(self.targets))))
+        class_index = list(range(len(self.targets)))
+        random.shuffle(class_index)
+        shuffled_class_index = class_index
         labeled_index, unlabeled_index = [], []
         counter = [i for i in range(10)]
         for index in shuffled_class_index:
@@ -109,7 +113,9 @@ class STL10(dsets.STL10):
     def __init__(self, num_labels, iteration, bs, **kwargs):
         super(STL10, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
-        shuffled_class_index = random.shuffle(list(range(len(self.labels))))
+        class_index = list(range(len(self.targets)))
+        random.shuffle(class_index)
+        shuffled_class_index = class_index
         labeled_index, unlabeled_index = [], []
         counter = [i for i in range(10)]
         for index in shuffled_class_index:
@@ -159,7 +165,7 @@ test_dset = {
 }
 
 
-def dataloader(dset, path, iteration, num_labels=4000, bs=100, save_path=None):
+def dataloader(dset, path, iteration, num_labels=4000, bs=100):
     train_dataset = train_dset[dset](
         root=path,
         num_labels=num_labels,
