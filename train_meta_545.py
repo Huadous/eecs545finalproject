@@ -191,13 +191,14 @@ if __name__ == "__main__":
         labeled_image, labeled_class, labeled_class_matrix, unlabeled_image, unlabeled_class = BatchSampler()
 
         learning_rate, weight = update_learning_rate_and_weight()
+        print(learning_rate, weight)
 
         model.eval()
 
         labeled_prediction_iter = model(labeled_image)
         labeled_loss_iter = F.cross_entropy(
             labeled_prediction_iter, labeled_class, reduction='mean')
-
+        print(labeled_prediction_iter, labeled_loss_iter)
         delta_theta_labeled_implementation = delta_theta_labeled()
 
         unlabeled_pseudo_class_matrix = update_pseudo_label()

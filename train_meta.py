@@ -144,7 +144,7 @@ def main():
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
         weight = compute_weight(args.weight, step, args.warmup)
-
+        print(lr, weight)
         ### First-order Approximation ###
         _concat = lambda xs: torch.cat([x.view(-1) for x in xs])
         # Evaluation mode
@@ -153,7 +153,7 @@ def main():
         label_pred = model(label_img)
         label_loss = F.cross_entropy(label_pred, label_gt, reduction='mean')
         dtheta = torch.autograd.grad(label_loss, model.parameters(), only_inputs=True)
-
+        print(label_pred, label_loss)
         with torch.no_grad():
             # Compute the unlabel pseudo-gt
             unlabel_pred = model(unlabel_img)
