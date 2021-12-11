@@ -249,9 +249,7 @@ if __name__ == "__main__":
         interp_losses.update(interpolare_loss_iter.item(),
                              labeled_image.size(0))
 
-        log_info(iter, learning_rate, labeled_loss, labeled_accuracy,
-                 unlabeled_loss, unlabeled_accuracy)
-        best_test_accuracy = save_check_point(
-            iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses)
+        log_info()
+        best_test_accuracy = save_check_point()
 
     writer.close()
