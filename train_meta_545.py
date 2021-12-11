@@ -8,9 +8,6 @@ from torch.optim import SGD
 from torch.distributions import Beta
 import torchvision
 
-from tensorboardX import SummaryWriter
-
-
 from dataloader import dataloader
 from utils import AverageMeter, logger_config, accuracy, save_checkpoint
 from model import SCNN, vgg11
@@ -36,7 +33,6 @@ torch.manual_seed(8469)
 if not exists(result_path):
     os.makedirs(result_path)
 logger = logger_config()
-writer = SummaryWriter(log_dir=result_path)
 
 train_loader, test_loader = dataloader(
     dset=args.dataset,
@@ -173,15 +169,6 @@ def save_check_point(best_test_accuracy):
             'Best_test_accuracy': best_test_accuracy,
             'Optimizer': optimizer.state_dict()
         }, test_accuracy > best_test_accuracy, path=result_path, filename="checkpoint.pth")
-
-        writer.add_scalar('train/label-acc', labeled_accuracy.avg, iter)
-        writer.add_scalar('train/unlabel-acc', unlabeled_accuracy.avg, iter)
-        writer.add_scalar('train/label-loss', labeled_loss.avg, iter)
-        writer.add_scalar('train/unlabel-loss', unlabeled_loss.avg, iter)
-        writer.add_scalar('train/lr', learning_rate, iter)
-        writer.add_scalar('test/accuracy', test_accuracy, iter)
-        writer.add_scalar('train/interp-loss', interp_losses.avg, iter)
-
         labeled_loss.reset()
         labeled_accuracy.reset()
         unlabeled_loss.reset()
@@ -250,4 +237,3 @@ if __name__ == "__main__":
         log_info()
         best_test_accuracy = save_check_point(best_test_accuracy)
 
-    writer.close()
