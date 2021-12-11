@@ -194,8 +194,10 @@ if __name__ == "__main__":
     unlabeled_loss = AverageMeter()
     unlabeled_accuracy = AverageMeter()
     interp_losses = AverageMeter()
+    print("<<<<<<<" + str(best_test_accuracy))
 
     for iter in range(args.iteration):
+        print("1<<<<<<<" + str(best_test_accuracy))
         labeled_image, labeled_class, labeled_class_matrix, unlabeled_image, unlabeled_class = BatchSampler(
             train_loader)
 
@@ -247,7 +249,7 @@ if __name__ == "__main__":
 
         log_info(iter, learning_rate, labeled_loss, labeled_accuracy,
                  unlabeled_loss, unlabeled_accuracy)
-        print(">>>>>>>>>>" + str(best_test_accuracy))
+        print("2>>>>>>>>>>" + str(best_test_accuracy))
         best_test_accuracy = save_check_point(
             iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses)
 
