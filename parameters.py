@@ -37,18 +37,6 @@ test_transform = {
     ])
 }
 
-train_dset = {
-    'mnist': MNIST,
-    'fmnist': FMNIST,
-    'stl10': STL10,
-}
-
-test_dset = {
-    'mnist': dsets.MNIST,
-    'fmnist': dsets.FashionMNIST,
-    'stl10': dsets.STL10,
-}
-
 train_kwargs = {
     'mnist': {'train': True, 'download': True},
     'fmnist': {'train': True, 'download': True},
