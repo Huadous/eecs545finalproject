@@ -203,8 +203,7 @@ if __name__ == "__main__":
     unlabeled_accuracy = AverageMeter()
     interp_losses = AverageMeter()
     for iter in range(args.iteration): 
-        labeled_image, labeled_class, labeled_class_matrix, unlabeled_image, unlabeled_class = BatchSampler(
-            train_loader)
+        labeled_image, labeled_class, labeled_class_matrix, unlabeled_image, unlabeled_class = BatchSampler()
 
         learning_rate, weight = update_learning_rate_and_weight()
 
