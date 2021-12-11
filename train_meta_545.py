@@ -74,7 +74,14 @@ def BatchSampler(data_loader):
 
 
 def update_learning_rate_and_weight(iter):
-    learning_rate = 0.1 if iter >= 4000 else 0.1 * iter / 4000
+    learning_rate = 0.1
+    if iter < 4000:
+        learning_rate *= iter / 4000
+    else:
+        if iter > 300000:
+            learning_rate *= 0.1
+        else:
+            learning_rate *= 0.01
 
     for param_group in optimizer.param_groups:
         param_group['lr'] = learning_rate
