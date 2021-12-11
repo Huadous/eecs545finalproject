@@ -190,6 +190,7 @@ def save_check_point(best_test_accuracy):
         unlabeled_loss.reset()
         unlabeled_accuracy.reset()
         interp_losses.reset()
+    return best_test_accuracy
 
 
 def show_info(idx):
@@ -250,6 +251,6 @@ if __name__ == "__main__":
                              labeled_image.size(0))
 
         log_info()
-        best_test_accuracy = save_check_point()
+        best_test_accuracy = save_check_point(best_test_accuracy)
 
     writer.close()
