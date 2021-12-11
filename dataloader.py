@@ -6,6 +6,8 @@ from os.path import join
 import numpy as np
 import parameters
 
+from tqdm import tqdm
+
 def get_class_balanced_labels(targets, labels_per_class, save_path):
     num_classes = 10
 
@@ -27,26 +29,38 @@ def get_class_balanced_labels(targets, labels_per_class, save_path):
 
     return label_indices, unlabel_indices
 
+def get_repeated_indices(indices, num_iters, batch_size):
+    length = num_iters * batch_size
+    num_epochs = length // len(indices) + 1
+    repeated_indices = []
+
+    for epoch in tqdm(range(num_epochs), desc='Pre-allocating indices'):
+        random.shuffle(indices)
+        repeated_indices += indices
+
+    return repeated_indices[:length]
 
 class MNIST(dsets.MNIST):
     def __init__(self, num_labels,iteration, bs, save_path, **kwargs):
         super(MNIST, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
-
         labeled_index, unlabeled_index = get_class_balanced_labels(
             self.targets, labels_per_class, save_path)
 
-        total_num = iteration * bs
-        num_of_labeld = total_num // len(labeled_index) + 1
-        num_of_unlabeld = total_num // len(unlabeled_index) + 1
-        self.reformed_labeled_index, self.reformed_unlabeled_index = [], []
-        for i in range(num_of_labeld):
-            random.shuffle(labeled_index)
-            self.reformed_labeled_index += labeled_index
-        for i in range(num_of_unlabeld):
-            random.shuffle(unlabeled_index)
-            self.reformed_unlabeled_index += labeled_index
-        self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
+
+        self.repeated_label_indices = get_repeated_indices(labeled_index, iteration, bs)
+        self.repeated_unlabel_indices = get_repeated_indices(unlabeled_index, iteration, bs)
+        # total_num = iteration * bs
+        # num_of_labeld = total_num // len(labeled_index) + 1
+        # num_of_unlabeld = total_num // len(unlabeled_index) + 1
+        # self.reformed_labeled_index, self.reformed_unlabeled_index = [], []
+        # for i in range(num_of_labeld):
+        #     random.shuffle(labeled_index)
+        #     self.reformed_labeled_index += labeled_index
+        # for i in range(num_of_unlabeld):
+        #     random.shuffle(unlabeled_index)
+        #     self.reformed_unlabeled_index += labeled_index
+        # self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
 
     def __len__(self):
         return len(self.repeated_label_indices)
