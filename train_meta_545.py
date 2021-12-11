@@ -95,13 +95,13 @@ def update_pseudo_label(unlabeled_image, dtli, learning_rate):
     epsilon = 1e-2 / torch.norm(torch.cat([x.view(-1) for x in dtli]))
 
     for para, theta in zip(model.parameters(), dtli):
-        para.data.add_(theta, alpha=epsilon)
+            para.data.add_(theta, alpha=epsilon)        
     unlabeled_prediction_1 = model(unlabeled_image)
     for para, theta in zip(model.parameters(), dtli):
         para.data.add_(theta, alpha=2.*epsilon)
     unlabeled_prediction_0 = model(unlabeled_image)
     for para, theta in zip(model.parameters(), dtli):
-        para.data.add_(theta, alpha=epsilon)
+            para.data.add_(theta, alpha=epsilon)  
 
     unlabeled_gradient = F.softmax(unlabeled_prediction_1, dim=1) - \
         F.softmax(unlabeled_prediction_0, dim=1)
@@ -129,8 +129,9 @@ def improved_training_protocol(labeled_image, unlabeled_image, labeled_class_mat
 
 
 def log_info(iter, learning_rate, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy):
-    logger.info("['Train': 'Iteration': {0:05d}, \n\t'Labeled': ['Loss': {labeled_loss.val:.3f}, 'Loss avg': {labeled_loss.avg:.3f}, 'Acc': {labeled_accuracy.val:.3f}, 'Acc avg': {labeled_accuracy.avg:.3f}], \n\t'Unlabeled': ['Loss': {unlabeled_loss.val:.3f}, 'Loss avg': {unlabeled_loss.avg:.3f}, 'Acc': {unlabeled_accuracy.val:.3f}, 'Acc avg': {unlabeled_accuracy.avg:.3f}]\n]".format(iter, labeled_loss=labeled_loss,
-                                                                                                                                                                                                                                                                                                                                                                                                       labeled_accuracy=labeled_accuracy, unlabeled_loss=unlabeled_loss,  unlabeled_accuracy=unlabeled_accuracy))
+    if iter % 100 == 0:
+        logger.info("['Train': 'Iteration': {0:05d}, \n\t'Labeled': ['Loss': {labeled_loss.val:.3f}, 'Loss avg': {labeled_loss.avg:.3f}, 'Acc': {labeled_accuracy.val:.3f}, 'Acc avg': {labeled_accuracy.avg:.3f}], \n\t'Unlabeled': ['Loss': {unlabeled_loss.val:.3f}, 'Loss avg': {unlabeled_loss.avg:.3f}, 'Acc': {unlabeled_accuracy.val:.3f}, 'Acc avg': {unlabeled_accuracy.avg:.3f}]\n]".format(iter, labeled_loss=labeled_loss,
+                                                    labeled_accuracy=labeled_accuracy, unlabeled_loss=unlabeled_loss,  unlabeled_accuracy=unlabeled_accuracy))
 
 
 @torch.no_grad()
@@ -157,32 +158,32 @@ def test_eval(test_loader, model):
 
 
 def save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses):
-    test_accuracy = test_eval(test_loader, model)
-    print(type(test_accuracy), type(best_test_accuracy))
-    if test_accuracy > best_test_accuracy:
-        best_test_accuracy = test_accuracy
-    logger.info("['Best accuracy': %.5f]" % best_test_accuracy)
-    save_checkpoint({
-        'Iteration': iter + 1,
-        'Model': model.state_dict(),
-        'Best_test_accuracy': best_test_accuracy,
-        'Optimizer': optimizer.state_dict()
-    }, test_accuracy > best_test_accuracy, path=result_path, filename="checkpoint.pth")
+    if (iter + 1) % 400 == 0 or iter == args.iteration - 1:
+        test_accuracy = test_eval(test_loader, model)
+        if test_accuracy > best_test_accuracy:
+            best_test_accuracy = test_accuracy
+        logger.info("['Best accuracy': %.5f]" % best_test_accuracy)
+        save_checkpoint({
+            'Iteration': iter + 1,
+            'Model': model.state_dict(),
+            'Best_test_accuracy': best_test_accuracy,
+            'Optimizer': optimizer.state_dict()
+        }, test_accuracy > best_test_accuracy, path=result_path, filename="checkpoint.pth")
 
-    writer.add_scalar('train/label-acc', labeled_accuracy.avg, iter)
-    writer.add_scalar('train/unlabel-acc', unlabeled_accuracy.avg, iter)
-    writer.add_scalar('train/label-loss', labeled_loss.avg, iter)
-    writer.add_scalar('train/unlabel-loss', unlabeled_loss.avg, iter)
-    writer.add_scalar('train/lr', learning_rate, iter)
-    writer.add_scalar('test/accuracy', test_accuracy, iter)
-    writer.add_scalar('train/interp-loss', interp_losses.avg, iter)
+        writer.add_scalar('train/label-acc', labeled_accuracy.avg, iter)
+        writer.add_scalar('train/unlabel-acc', unlabeled_accuracy.avg, iter)
+        writer.add_scalar('train/label-loss', labeled_loss.avg, iter)
+        writer.add_scalar('train/unlabel-loss', unlabeled_loss.avg, iter)
+        writer.add_scalar('train/lr', learning_rate, iter)
+        writer.add_scalar('test/accuracy', test_accuracy, iter)
+        writer.add_scalar('train/interp-loss', interp_losses.avg, iter)
 
-    labeled_loss.reset()
-    labeled_accuracy.reset()
-    unlabeled_loss.reset()
-    unlabeled_accuracy.reset()
-    interp_losses.reset()
-    return interp_losses
+        labeled_loss.reset()
+        labeled_accuracy.reset()
+        unlabeled_loss.reset()
+        unlabeled_accuracy.reset()
+        interp_losses.reset()
+    return best_test_accuracy
 
 
 if __name__ == "__main__":
@@ -241,12 +242,10 @@ if __name__ == "__main__":
             unlabeled_accuracy_first.item(), unlabeled_image.size(0))
         interp_losses.update(interpolare_loss_iter.item(),
                              labeled_image.size(0))
-        if iter % 100 == 0:
-            log_info(iter, learning_rate, labeled_loss, labeled_accuracy,
-                 unlabeled_loss, unlabeled_accuracy)
-            if (iter + 1) % 400 == 0 or iter == args.iteration - 1:
-                best_test_accuracy = save_check_point(
-                iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses)
 
-        
+        log_info(iter, learning_rate, labeled_loss, labeled_accuracy,
+                 unlabeled_loss, unlabeled_accuracy)
+        best_test_accuracy = save_check_point(
+            iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses)
+
     writer.close()
