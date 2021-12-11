@@ -144,11 +144,11 @@ def test_eval(test_loader, model):
         test_class = test_class.cuda()
 
         test_prediction = model(test_image)
-        test_loss = F.cross_entropy(
+        test_loss_iter = F.cross_entropy(
             test_prediction, test_class, reduction='mean')
 
         test_accuracy_first, = accuracy(test_prediction, test_class)
-        test_loss.update(test_loss.item(), test_image.size(0))
+        test_loss.update(test_loss_iter.item(), test_image.size(0))
         test_accuracy.update(test_accuracy_first.item(), test_image.size(0))
 
         if i % 400 == 0:
