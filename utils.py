@@ -46,7 +46,6 @@ def save_checkpoint(state, is_best, path, filename="checkpoint.pth"):
         shutil.copyfile(join(path, filename), join(path, 'model_best.pth'))
 
 
-@ torch.no_grad()
 def accuracy(output, class_):
     bs = class_.size(0)
     _, prediction = output.topk(1, 1, True, True)
