@@ -36,7 +36,7 @@ class ConvLarge(nn.Module):
         z = self.fc(z)
         return z
 
-class VGG_modifed(nn.Module):
+class VGG(nn.Module):
     def __init__(
         self,
         features: nn.Module,
