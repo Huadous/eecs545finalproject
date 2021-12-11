@@ -25,7 +25,7 @@ parser.add_argument('--dataset', '-ds', type=str,
                     default='mnist', choices=["mnist", "fmnist", "stl10"])
 parser.add_argument('--model', '-m', type=str,
                     default='scnn', choices=['scnn', 'vgg'])
-parser.add_argument('--itertaion', '-i', type=int, default=100000)
+parser.add_argument('--iteration', '-i', type=int, default=100000)
 args = parser.parse_args()
 
 data_path = './data/' + args.dataset
@@ -164,10 +164,10 @@ def save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, u
             best_test_accuracy = test_accuracy
         logger.info("{'Best accuracy': %.5f}" % best_test_accuracy)
         save_checkpoint({
-            'iteration': iter + 1,
-            'model': model.state_dict(),
-            'best_acc': best_test_accuracy,
-            'optimizer': optimizer.state_dict()
+            'Iteration': iter + 1,
+            'Model': model.state_dict(),
+            'Best_test_accuracy': best_test_accuracy,
+            'Optimizer': optimizer.state_dict()
         }, test_accuracy > best_test_accuracy, path=result_path, filename="checkpoint.pth")
 
         writer.add_scalar('train/label-acc', labeled_accuracy.avg, iter)
