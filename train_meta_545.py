@@ -213,7 +213,7 @@ if __name__ == "__main__":
         labeled_prediction_iter = model(labeled_image)
         labeled_loss_iter = F.cross_entropy(
             labeled_prediction_iter, labeled_class, reduction='mean')
-        show_info(3)
+        # show_info(3)
         delta_theta_labeled_implementation = delta_theta_labeled()
         # show_info(4)
         unlabeled_pseudo_class_matrix = update_pseudo_label()
