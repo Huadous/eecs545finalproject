@@ -188,7 +188,7 @@ def save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, u
 
 
 if __name__ == "__main__":
-    best_test_accuracy = 0.
+    best_test_accuracy = 0.0
     labeled_loss = AverageMeter()
     labeled_accuracy = AverageMeter()
     unlabeled_loss = AverageMeter()
@@ -247,7 +247,7 @@ if __name__ == "__main__":
 
         log_info(iter, learning_rate, labeled_loss, labeled_accuracy,
                  unlabeled_loss, unlabeled_accuracy)
-
+        print(">>>>>>>>>>" + str(best_test_accuracy))
         best_test_accuracy = save_check_point(
             iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses)
 
