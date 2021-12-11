@@ -47,30 +47,27 @@ class MNIST(dsets.MNIST):
         labeled_index, unlabeled_index = get_class_balanced_labels(
             self.targets, labels_per_class, save_path)
 
-
-        self.repeated_label_indices = get_repeated_indices(labeled_index, iteration, bs)
-        self.repeated_unlabel_indices = get_repeated_indices(unlabeled_index, iteration, bs)
-        # total_num = iteration * bs
-        # num_of_labeld = total_num // len(labeled_index) + 1
-        # num_of_unlabeld = total_num // len(unlabeled_index) + 1
-        # self.reformed_labeled_index, self.reformed_unlabeled_index = [], []
-        # for i in range(num_of_labeld):
-        #     random.shuffle(labeled_index)
-        #     self.reformed_labeled_index += labeled_index
-        # for i in range(num_of_unlabeld):
-        #     random.shuffle(unlabeled_index)
-        #     self.reformed_unlabeled_index += labeled_index
-        # self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
+        total_num = iteration * bs
+        num_of_labeld = total_num // len(labeled_index) + 1
+        num_of_unlabeld = total_num // len(unlabeled_index) + 1
+        self.reformed_labeled_index, self.reformed_unlabeled_index = [], []
+        for i in range(num_of_labeld):
+            random.shuffle(labeled_index)
+            self.reformed_labeled_index += labeled_index
+        for i in range(num_of_unlabeld):
+            random.shuffle(unlabeled_index)
+            self.reformed_unlabeled_index += labeled_index
+        self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
 
     def __len__(self):
-        return len(self.repeated_label_indices)
+        return len(self.reformed_labeled_index)
 
     def __getitem__(self, index):
-        labeled_index = self.repeated_label_indices[index]
+        labeled_index = self.reformed_labeled_index[index]
         labeled_image, labeled_class = self.data[labeled_index], self.targets[labeled_index]
         labeled_image = self.transform(Image.fromarray(np.asarray(labeled_image)))
 
-        unlabeled_index = self.repeated_unlabel_indices[index]
+        unlabeled_index = self.reformed_unlabeled_index[index]
         unlabeled_image, unlabeled_class = self.data[unlabeled_index], self.targets[unlabeled_index]
         unlabeled_image = self.transform(Image.fromarray(np.asarray(unlabeled_image)))
 
@@ -98,14 +95,14 @@ class FMNIST(dsets.FashionMNIST):
         self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
 
     def __len__(self):
-        return len(self.repeated_label_indices)
+        return len(self.reformed_labeled_index)
 
     def __getitem__(self, index):
-        labeled_index = self.repeated_label_indices[index]
+        labeled_index = self.reformed_labeled_index[index]
         labeled_image, labeled_class = self.data[labeled_index], self.targets[labeled_index]
         labeled_image = self.transform(Image.fromarray(np.asarray(labeled_image)))
 
-        unlabeled_index = self.repeated_unlabel_indices[index]
+        unlabeled_index = self.reformed_unlabeled_index[index]
         unlabeled_image, unlabeled_class = self.data[unlabeled_index], self.targets[unlabeled_index]
         unlabeled_image = self.transform(Image.fromarray(np.asarray(unlabeled_image)))
 
@@ -132,14 +129,14 @@ class STL10(dsets.STL10):
         self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
 
     def __len__(self):
-        return len(self.repeated_label_indices)
+        return len(self.reformed_labeled_index)
 
     def __getitem__(self, index):
-        labeled_index = self.repeated_label_indices[index]
+        labeled_index = self.reformed_labeled_index[index]
         labeled_image, labeled_class = self.data[labeled_index], int(self.labels[labeled_index])
         labeled_image = self.transform(Image.fromarray(np.transpose(labeled_image, (1, 2, 0))))
 
-        unlabeled_index = self.repeated_unlabel_indices[index]
+        unlabeled_index = self.reformed_unlabeled_index[index]
         unlabeled_image, unlabeled_class = self.data[unlabeled_index], int(
                 self.labels[unlabeled_index])
         unlabeled_image = self.transform(Image.fromarray(np.transpose(unlabeled_image, (1, 2, 0))))
