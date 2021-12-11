@@ -39,8 +39,14 @@ class MNIST(dsets.MNIST):
         total_num = iteration * bs
         num_of_labeld = total_num // len(labeled_index) + 1
         num_of_unlabeld = total_num // len(unlabeled_index) + 1
-        self.reformed_labeled_index = [item for i in range(num_of_labeld) for item in random.shuffle(labeled_index)][:total_num]
-        self.reformed_unlabeled_index = [item for i in range(num_of_unlabeld) for item in random.shuffle(unlabeled_index)][:total_num]
+        self.reformed_labeled_index, self.reformed_unlabeled_index = [], []
+        for i in range(num_of_labeld):
+            random.shuffle(labeled_index)
+            self.reformed_labeled_index += labeled_index
+        for i in range(num_of_unlabeld):
+            random.shuffle(unlabeled_index)
+            self.reformed_unlabeled_index += labeled_index
+        self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
 
     def __len__(self):
         return len(self.repeated_label_indices)
@@ -62,14 +68,20 @@ class FMNIST(dsets.FashionMNIST):
         super(FMNIST, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
 
-        self.label_indices, self.unlabel_indices = get_class_balanced_labels(
+        labeled_index, unlabeled_index = get_class_balanced_labels(
             self.targets, labels_per_class, save_path)
         
         total_num = iteration * bs
         num_of_labeld = total_num // len(labeled_index) + 1
         num_of_unlabeld = total_num // len(unlabeled_index) + 1
-        self.reformed_labeled_index = [item for i in range(num_of_labeld) for item in random.shuffle(labeled_index)][:total_num]
-        self.reformed_unlabeled_index = [item for i in range(num_of_unlabeld) for item in random.shuffle(unlabeled_index)][:total_num]
+        self.reformed_labeled_index, self.reformed_unlabeled_index = [], []
+        for i in range(num_of_labeld):
+            random.shuffle(labeled_index)
+            self.reformed_labeled_index += labeled_index
+        for i in range(num_of_unlabeld):
+            random.shuffle(unlabeled_index)
+            self.reformed_unlabeled_index += labeled_index
+        self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
 
     def __len__(self):
         return len(self.repeated_label_indices)
@@ -91,13 +103,19 @@ class STL10(dsets.STL10):
         super(STL10, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
 
-        self.label_indices, self.unlabel_indices = get_class_balanced_labels(
+        labeled_index, unlabeled_index = get_class_balanced_labels(
             self.labels, labels_per_class, save_path)
         total_num = iteration * bs
         num_of_labeld = total_num // len(labeled_index) + 1
         num_of_unlabeld = total_num // len(unlabeled_index) + 1
-        self.reformed_labeled_index = [item for i in range(num_of_labeld) for item in random.shuffle(labeled_index)][:total_num]
-        self.reformed_unlabeled_index = [item for i in range(num_of_unlabeld) for item in random.shuffle(unlabeled_index)][:total_num]
+        self.reformed_labeled_index, self.reformed_unlabeled_index = [], []
+        for i in range(num_of_labeld):
+            random.shuffle(labeled_index)
+            self.reformed_labeled_index += labeled_index
+        for i in range(num_of_unlabeld):
+            random.shuffle(unlabeled_index)
+            self.reformed_unlabeled_index += labeled_index
+        self.reformed_labeled_index, self.reformed_unlabeled_index = self.reformed_labeled_index[:total_num], self.reformed_unlabeled_index[:total_num]
 
     def __len__(self):
         return len(self.repeated_label_indices)
