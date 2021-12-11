@@ -186,14 +186,14 @@ def dataloader(dset, path, num_iters, num_labels=4000, bs=100, return_unlabel=Tr
         'fmnist': FMNIST,
         'stl10': STL10,
     }
-    
+
     test_dset = {
         'mnist': dsets.MNIST,
         'fmnist': dsets.FashionMNIST,
         'stl10': dsets.STL10,
     }
 
-    train_dataset = parameters.train_dset[dset](
+    train_dataset = train_dset[dset](
         root=path,
         num_labels=num_labels,
         num_iters=num_iters,
@@ -211,7 +211,7 @@ def dataloader(dset, path, num_iters, num_labels=4000, bs=100, return_unlabel=Tr
         shuffle=False
     )
 
-    test_dataset = parameters.test_dset[dset](
+    test_dataset = test_dset[dset](
         root=path,
         transform=parameters.test_transform[dset],
         **parameters.test_kwargs[dset]
