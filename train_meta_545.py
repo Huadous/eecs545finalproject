@@ -65,7 +65,7 @@ optimizer = SGD(model.parameters(), lr=0.1, momentum=0.9,
 beta_distribution = Beta(torch.tensor([1.0]), torch.tensor([1.0]))
 
 
-def BatchSampler(data_loader):
+def BatchSampler():
     labeled_images, labeled_class, unlabeled_images, unlabeled_class = next(
         train_loader)
     labeled_class_matrix = F.one_hot(
@@ -73,7 +73,7 @@ def BatchSampler(data_loader):
     return labeled_images.cuda(), labeled_class.cuda(), labeled_class_matrix.cuda(), unlabeled_images.cuda(), unlabeled_class.cuda()
 
 
-def update_learning_rate_and_weight(iter):
+def update_learning_rate_and_weight():
     learning_rate = 0.1
     if iter < 4000:
         learning_rate *= iter / 4000
@@ -90,24 +90,24 @@ def update_learning_rate_and_weight(iter):
     return learning_rate, weight
 
 
-def delta_theta_labeled(labeled_loss):
+def delta_theta_labeled():
     return torch.autograd.grad(labeled_loss, model.parameters(), only_inputs=True)
 
 
 @torch.no_grad()
-def update_pseudo_label(unlabeled_image, dtli, learning_rate):
+def update_pseudo_label():
     unlabeled_prediction = model(unlabeled_image)
     unlabeled_pseudo_class_matrix = F.softmax(unlabeled_prediction, dim=1)
     unlabeled_pseudo_class_matrix.cuda()
-    epsilon = 1e-2 / torch.norm(torch.cat([x.view(-1) for x in dtli]))
+    epsilon = 1e-2 / torch.norm(torch.cat([x.view(-1) for x in delta_theta_labeled_implementation]))
 
-    for para, theta in zip(model.parameters(), dtli):
+    for para, theta in zip(model.parameters(), delta_theta_labeled_implementation):
             para.data.add_(theta, alpha=epsilon)        
     unlabeled_prediction_1 = model(unlabeled_image)
-    for para, theta in zip(model.parameters(), dtli):
+    for para, theta in zip(model.parameters(), delta_theta_labeled_implementation):
         para.data.add_(theta, alpha=2.*epsilon)
     unlabeled_prediction_0 = model(unlabeled_image)
-    for para, theta in zip(model.parameters(), dtli):
+    for para, theta in zip(model.parameters(), delta_theta_labeled_implementation):
             para.data.add_(theta, alpha=epsilon)  
 
     unlabeled_gradient = F.softmax(unlabeled_prediction_1, dim=1) - \
@@ -123,7 +123,7 @@ def update_pseudo_label(unlabeled_image, dtli, learning_rate):
 
 
 @ torch.no_grad()
-def improved_training_protocol(labeled_image, unlabeled_image, labeled_class_matrix, unlabeled_pseudo_class_matrix):
+def improved_training_protocol():
     lambda_i_class = beta_distribution.sample((100,))
     lambda_i_class = lambda_i_class.cuda()
     lambda_i_image = lambda_i_class.view(-1, 1, 1, 1)
@@ -135,14 +135,14 @@ def improved_training_protocol(labeled_image, unlabeled_image, labeled_class_mat
     return interpolate_image, interpolate_pseudo_class
 
 
-def log_info(iter, learning_rate, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy):
+def log_info():
     if iter % 100 == 0:
         logger.info("['Train': 'Iteration': {0:05d}, \n\t'Labeled': ['Loss': {labeled_loss.val:.3f}, 'Loss avg': {labeled_loss.avg:.3f}, 'Acc': {labeled_accuracy.val:.3f}, 'Acc avg': {labeled_accuracy.avg:.3f}], \n\t'Unlabeled': ['Loss': {unlabeled_loss.val:.3f}, 'Loss avg': {unlabeled_loss.avg:.3f}, 'Acc': {unlabeled_accuracy.val:.3f}, 'Acc avg': {unlabeled_accuracy.avg:.3f}]\n]".format(iter, labeled_loss=labeled_loss,
                                                     labeled_accuracy=labeled_accuracy, unlabeled_loss=unlabeled_loss,  unlabeled_accuracy=unlabeled_accuracy))
 
 
 @torch.no_grad()
-def test_eval(test_loader, model):
+def test_eval():
     test_loss = AverageMeter()
     test_accuracy = AverageMeter()
     model.eval()
@@ -164,7 +164,7 @@ def test_eval(test_loader, model):
     return test_accuracy.avg
 
 
-def save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses):
+def save_check_point(best_test_accuracy):
     if (iter + 1) % 400 == 0 or iter == args.iteration - 1:
         test_accuracy = test_eval(test_loader, model)
         if test_accuracy > best_test_accuracy:
@@ -190,7 +190,6 @@ def save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, u
         unlabeled_loss.reset()
         unlabeled_accuracy.reset()
         interp_losses.reset()
-    return best_test_accuracy
 
 
 def show_info(idx):
@@ -206,8 +205,8 @@ if __name__ == "__main__":
     for iter in range(args.iteration): 
         labeled_image, labeled_class, labeled_class_matrix, unlabeled_image, unlabeled_class = BatchSampler(
             train_loader)
-            
-        learning_rate, weight = update_learning_rate_and_weight(iter=iter)
+
+        learning_rate, weight = update_learning_rate_and_weight()
 
         model.eval()
 
@@ -215,17 +214,14 @@ if __name__ == "__main__":
         labeled_loss_iter = F.cross_entropy(
             labeled_prediction_iter, labeled_class, reduction='mean')
         show_info(3)
-        delta_theta_labeled_implementation = delta_theta_labeled(
-            labeled_loss_iter)
-        show_info(4)
-        unlabeled_pseudo_class_matrix = update_pseudo_label(
-            unlabeled_image, delta_theta_labeled_implementation, learning_rate)
-        show_info(5)
+        delta_theta_labeled_implementation = delta_theta_labeled()
+        # show_info(4)
+        unlabeled_pseudo_class_matrix = update_pseudo_label()
+        # show_info(5)
         model.train()
 
-        interpolate_image, interpolate_pseudo_class = improved_training_protocol(
-            labeled_image, unlabeled_image, labeled_class_matrix, unlabeled_pseudo_class_matrix)
-        show_info(6)
+        interpolate_image, interpolate_pseudo_class = improved_training_protocol()
+        # show_info(6)
         interpolare_prediction_iter = model(interpolate_image)
         interpolare_loss_iter = F.kl_div(F.log_softmax(
             interpolare_prediction_iter, dim=1), interpolate_pseudo_class, reduction='batchmean')
@@ -234,11 +230,11 @@ if __name__ == "__main__":
         unlabeled_loss_iter = torch.norm(
             F.softmax(unlabeled_prediction_iter, dim=1)-unlabeled_pseudo_class_matrix, p=2, dim=1).pow(2).mean()
         overall_loss = interpolare_loss_iter + weight * unlabeled_loss_iter
-        show_info(7)
+        # show_info(7)
         optimizer.zero_grad()
         overall_loss.backward()
         optimizer.step()
-        show_info(8)
+        # show_info(8)
         labeled_accuracy_first, = accuracy(
             labeled_prediction_iter, labeled_class)
         unlabeled_accuracy_first, = accuracy(
