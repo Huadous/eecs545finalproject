@@ -47,20 +47,21 @@ train_loader, test_loader = dataloader(
     save_path=result_path
 )
 
-kwargs = {'num_classes': 10}
-num_classes = dataloader.train_dset[args.dataset].num_classes
+num_classes = 10
+kwargs = {'num_classes': num_classes}
 
 
-if args.architecture == "scnn":
-    model = ConvLarge(num_classes=args.num_classes)
-elif args.architecture == "vgg" and args.dataset == "lst10":
+
+if args.model == "scnn":
+    model = ConvLarge(num_classes=num_classes)
+elif args.model == "vgg" and args.dataset == "lst10":
     model = torchvision.models.vgg11(pretrained=False, progress=True, **kwargs)
-elif args.architecture == "vgg":
+elif args.model == "vgg":
     model = modified_vgg.vgg11(pretrained=False, progress=True, **kwargs)
 model.cuda()
 
 optimizer = SGD(model.parameters(), lr=0.1, momentum=0.9,
-                weight_decay=args.weight_decay)
+                weight_decay=1e-4)
 
 beta_distribution = Beta(torch.tensor([1]), torch.tensor([1]))
 
@@ -69,7 +70,7 @@ def BatchSampler(data_loader):
     labeled_images, labeled_class, unlabeled_images, unlabeled_class = next(
         train_loader)
     labeled_class_matrix = F.one_hot(
-        labeled_class, num_classes=args.num_classes).float()
+        labeled_class, num_classes=num_classes).float()
     return labeled_images.cuda(), labeled_class.cuda(), labeled_class_matrix, unlabeled_images.cuda(), unlabeled_class.cuda()
 
 
