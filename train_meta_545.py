@@ -211,6 +211,7 @@ if __name__ == "__main__":
         labeled_prediction_iter = model(labeled_image)
         labeled_loss_iter = F.cross_entropy(
             labeled_prediction_iter, labeled_class, reduction='mean')
+        print(labeled_loss_iter)
         delta_theta_labeled_implementation = delta_theta_labeled(
             labeled_loss_iter)
 
@@ -226,7 +227,7 @@ if __name__ == "__main__":
         interpolare_loss_iter = F.kl_div(F.log_softmax(
             interpolare_prediction_iter, dim=1), interpolate_pseudo_class, reduction='batchmean')
         print(interpolare_loss_iter)
-        print(labeled_loss_iter)
+        
         unlabeled_prediction_iter = model(unlabeled_image)
         unlabeled_loss_iter = torch.norm(
             F.softmax(unlabeled_prediction_iter, dim=1)-unlabeled_pseudo_class_matrix, p=2, dim=1).pow(2).mean()
