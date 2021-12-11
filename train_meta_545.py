@@ -193,6 +193,9 @@ def save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, u
     return best_test_accuracy
 
 
+def show_info(idx):
+    print(str(idx) + " : " + str(labeled_loss_iter))
+
 if __name__ == "__main__":
     best_test_accuracy = 0.0
     labeled_loss = AverageMeter()
@@ -200,43 +203,43 @@ if __name__ == "__main__":
     unlabeled_loss = AverageMeter()
     unlabeled_accuracy = AverageMeter()
     interp_losses = AverageMeter()
-    for iter in range(args.iteration):
+    for iter in range(args.iteration): 
+        show_info(0)
         labeled_image, labeled_class, labeled_class_matrix, unlabeled_image, unlabeled_class = BatchSampler(
             train_loader)
-
+        show_info(1)
         learning_rate, weight = update_learning_rate_and_weight(iter=iter)
-
+        show_info(2)
         model.eval()
 
         labeled_prediction_iter = model(labeled_image)
         labeled_loss_iter = F.cross_entropy(
             labeled_prediction_iter, labeled_class, reduction='mean')
-        print(labeled_loss_iter)
+        show_info(3)
         delta_theta_labeled_implementation = delta_theta_labeled(
             labeled_loss_iter)
-
+        show_info(4)
         unlabeled_pseudo_class_matrix = update_pseudo_label(
             unlabeled_image, delta_theta_labeled_implementation, learning_rate)
-
+        show_info(5)
         model.train()
 
         interpolate_image, interpolate_pseudo_class = improved_training_protocol(
             labeled_image, unlabeled_image, labeled_class_matrix, unlabeled_pseudo_class_matrix)
-
+        show_info(6)
         interpolare_prediction_iter = model(interpolate_image)
         interpolare_loss_iter = F.kl_div(F.log_softmax(
             interpolare_prediction_iter, dim=1), interpolate_pseudo_class, reduction='batchmean')
-        print(interpolare_loss_iter)
         
         unlabeled_prediction_iter = model(unlabeled_image)
         unlabeled_loss_iter = torch.norm(
             F.softmax(unlabeled_prediction_iter, dim=1)-unlabeled_pseudo_class_matrix, p=2, dim=1).pow(2).mean()
         overall_loss = interpolare_loss_iter + weight * unlabeled_loss_iter
-
+        show_info(7)
         optimizer.zero_grad()
         overall_loss.backward()
         optimizer.step()
-
+        show_info(8)
         labeled_accuracy_first, = accuracy(
             labeled_prediction_iter, labeled_class)
         unlabeled_accuracy_first, = accuracy(
