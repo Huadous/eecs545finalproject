@@ -51,7 +51,6 @@ num_classes = 10
 kwargs = {'num_classes': num_classes}
 
 
-
 if args.model == "scnn":
     model = ConvLarge(num_classes=num_classes)
 elif args.model == "vgg" and args.dataset == "lst10":
@@ -94,16 +93,14 @@ def update_pseudo_label(unlabeled_image, dtli, learning_rate):
     unlabeled_pseudo_class_matrix = F.softmax(unlabeled_prediction, dim=1)
     epsilon = 1e-2 / torch.norm(torch.cat([x.view(-1) for x in dtli]))
 
-    for i in range(len(dtli)):
-        model.parameters()[i].data.add_(dtli[i], alpha=epsilon)
+    for para, theta in zip(model.parameters(), dtli):
+            para.data.add_(theta, alpha=epsilon)        
     unlabeled_prediction_1 = model(unlabeled_image)
-
-    for i in range(len(dtli)):
-        model.parameters()[i].data.add_(dtli[i], alpha=2.*epsilon)
+    for para, theta in zip(model.parameters(), dtli):
+        para.data.add_(theta, alpha=2.*epsilon)
     unlabeled_prediction_0 = model(unlabeled_image)
-
-    for i in range(len(dtli)):
-        model.parameters()[i].data.add_(dtli[i], alpha=epsilon)
+    for para, theta in zip(model.parameters(), dtli):
+            para.data.add_(theta, alpha=epsilon)  
 
     unlabeled_gradient = F.softmax(unlabeled_prediction_1, dim=1) - \
         F.softmax(unlabeled_prediction_0, dim=1)
@@ -186,6 +183,7 @@ def save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, u
         interp_losses.reset()
         return interp_losses
 
+
 if __name__ == "__main__":
     best_test_accuracy = 0.
     labeled_loss = AverageMeter()
@@ -229,7 +227,8 @@ if __name__ == "__main__":
         overall_loss.backward()
         optimizer.step()
 
-        labeled_accuracy_first, = accuracy(labeled_prediction_iter, labeled_class)
+        labeled_accuracy_first, = accuracy(
+            labeled_prediction_iter, labeled_class)
         unlabeled_accuracy_first, = accuracy(
             unlabeled_prediction_iter, unlabeled_class)
 
@@ -246,7 +245,7 @@ if __name__ == "__main__":
         log_info(iter, learning_rate, labeled_loss, labeled_accuracy,
                  unlabeled_loss, unlabeled_accuracy)
 
-        best_test_accuracy = save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses)
-        
+        best_test_accuracy = save_check_point(
+            iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses)
 
     writer.close()
