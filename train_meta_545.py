@@ -160,6 +160,7 @@ def test_eval(test_loader, model):
 def save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy, interp_losses):
     if (iter + 1) % 400 == 0 or iter == args.iteration - 1:
         test_accuracy = test_eval(test_loader, model)
+        print(type(test_accuracy), type(best_test_accuracy))
         if test_accuracy > best_test_accuracy:
             best_test_accuracy = test_accuracy
         logger.info("['Best accuracy': %.5f]" % best_test_accuracy)
