@@ -3,13 +3,11 @@ import torchvision.datasets as dsets
 from PIL import Image
 import random
 from os.path import join
-from tqdm import tqdm
 import numpy as np
 import parameters
 
-
-def get_class_balanced_labels(targets, labels_per_class, save_path=None):
-    num_classes = max(targets) + 1
+def get_class_balanced_labels(targets, labels_per_class, save_path):
+    num_classes = 10
 
     indices = list(range(len(targets)))
     random.shuffle(indices)
@@ -23,145 +21,98 @@ def get_class_balanced_labels(targets, labels_per_class, save_path=None):
         else:
             unlabel_indices.append(idx)
 
-    if save_path is not None:
-        with open(join(save_path, 'label_indices.txt'), 'w+') as f:
-            for idx in label_indices:
-                f.write(str(idx) + '\n')
+    # with open(join(save_path, 'label_indices.txt'), 'w+') as f:
+    #     for idx in label_indices:
+    #         f.write(str(idx) + '\n')
 
     return label_indices, unlabel_indices
 
 
-def get_repeated_indices(indices, num_iters, batch_size):
-    length = num_iters * batch_size
-    num_epochs = length // len(indices) + 1
-    repeated_indices = []
-
-    for epoch in tqdm(range(num_epochs), desc='Pre-allocating indices'):
-        random.shuffle(indices)
-        repeated_indices += indices
-
-    return repeated_indices[:length]
-
-
 class MNIST(dsets.MNIST):
-    num_classes = 10
-
-    def __init__(self, num_labels, num_iters, batch_size, save_path=None, **kwargs):
+    def __init__(self, num_labels,iteration, bs, save_path, **kwargs):
         super(MNIST, self).__init__(**kwargs)
-        labels_per_class = num_labels // self.num_classes
+        labels_per_class = num_labels // 10
 
-        self.label_indices, self.unlabel_indices = get_class_balanced_labels(
+        labeled_index, unlabeled_index = get_class_balanced_labels(
             self.targets, labels_per_class, save_path)
-        self.repeated_label_indices = get_repeated_indices(
-            self.label_indices, num_iters, batch_size)
-        self.repeated_unlabel_indices = get_repeated_indices(
-            self.unlabel_indices, num_iters, batch_size)
+
+        total_num = iteration * bs
+        num_of_labeld = total_num // len(labeled_index) + 1
+        num_of_unlabeld = total_num // len(unlabeled_index) + 1
+        self.reformed_labeled_index = [item for i in range(num_of_labeld) for item in random.shuffle(labeled_index)][:total_num]
+        self.reformed_unlabeled_index = [item for i in range(num_of_unlabeld) for item in random.shuffle(unlabeled_index)][:total_num]
 
     def __len__(self):
         return len(self.repeated_label_indices)
 
-    def __getitem__(self, idx):
-        label_idx = self.repeated_label_indices[idx]
-        label_img, label_target = self.data[label_idx], self.targets[label_idx]
-        label_img = np.asarray(label_img)
-        label_img = Image.fromarray(label_img)
+    def __getitem__(self, index):
+        labeled_index = self.repeated_label_indices[index]
+        labeled_image, labeled_class = self.data[labeled_index], self.targets[labeled_index]
+        labeled_image = self.transform(Image.fromarray(np.asarray(labeled_image)))
 
-        if self.transform is not None:
-            label_img = self.transform(label_img)
-        # if self.target_transform is not None:
-        #     label_target = self.target_transform(label_target)
+        unlabeled_index = self.repeated_unlabel_indices[index]
+        unlabeled_image, unlabeled_class = self.data[unlabeled_index], self.targets[unlabeled_index]
+        unlabeled_image = self.transform(Image.fromarray(np.asarray(unlabeled_image)))
 
-        unlabel_idx = self.repeated_unlabel_indices[idx]
-        unlabel_img, unlabel_target = self.data[unlabel_idx], self.targets[unlabel_idx]
-        unlabel_img = np.asarray(unlabel_img)
-        unlabel_img = Image.fromarray(unlabel_img)
-
-        if self.transform is not None:
-            unlabel_img = self.transform(unlabel_img)
-        # if self.target_transform is not None:
-        #     unlabel_target = self.target_transform(unlabel_target)
-        return label_img, label_target, unlabel_img, unlabel_target
+        return labeled_image, labeled_class, unlabeled_image, unlabeled_class
 
 
 class FMNIST(dsets.FashionMNIST):
-    num_classes = 10
-
-    def __init__(self, num_labels, num_iters, batch_size, save_path=None, **kwargs):
+    def __init__(self, num_labels, iteration, bs, save_path, **kwargs):
         super(FMNIST, self).__init__(**kwargs)
-        labels_per_class = num_labels // self.num_classes
+        labels_per_class = num_labels // 10
 
         self.label_indices, self.unlabel_indices = get_class_balanced_labels(
             self.targets, labels_per_class, save_path)
-        self.repeated_label_indices = get_repeated_indices(
-            self.label_indices, num_iters, batch_size)
-        self.repeated_unlabel_indices = get_repeated_indices(
-                self.unlabel_indices, num_iters, batch_size)
+        
+        total_num = iteration * bs
+        num_of_labeld = total_num // len(labeled_index) + 1
+        num_of_unlabeld = total_num // len(unlabeled_index) + 1
+        self.reformed_labeled_index = [item for i in range(num_of_labeld) for item in random.shuffle(labeled_index)][:total_num]
+        self.reformed_unlabeled_index = [item for i in range(num_of_unlabeld) for item in random.shuffle(unlabeled_index)][:total_num]
 
     def __len__(self):
         return len(self.repeated_label_indices)
 
-    def __getitem__(self, idx):
-        label_idx = self.repeated_label_indices[idx]
-        label_img, label_target = self.data[label_idx], self.targets[label_idx]
-        label_img = np.asarray(label_img)
-        # print(type(label_img))
-        label_img = Image.fromarray(label_img)
+    def __getitem__(self, index):
+        labeled_index = self.repeated_label_indices[index]
+        labeled_image, labeled_class = self.data[labeled_index], self.targets[labeled_index]
+        labeled_image = self.transform(Image.fromarray(np.asarray(labeled_image)))
 
-        if self.transform is not None:
-            label_img = self.transform(label_img)
-        # if self.target_transform is not None:
-        #     label_target = self.target_transform(label_target)
+        unlabeled_index = self.repeated_unlabel_indices[index]
+        unlabeled_image, unlabeled_class = self.data[unlabeled_index], self.targets[unlabeled_index]
+        unlabeled_image = self.transform(Image.fromarray(np.asarray(unlabeled_image)))
 
-        unlabel_idx = self.repeated_unlabel_indices[idx]
-        unlabel_img, unlabel_target = self.data[unlabel_idx], self.targets[unlabel_idx]
-        unlabel_img = np.asarray(unlabel_img)
-        unlabel_img = Image.fromarray(unlabel_img)
-
-        if self.transform is not None:
-            unlabel_img = self.transform(unlabel_img)
-        # if self.target_transform is not None:
-        #     unlabel_target = self.target_transform(unlabel_target)
-        return label_img, label_target, unlabel_img, unlabel_target
+        return labeled_image, labeled_class, unlabeled_image, unlabeled_class
 
 
 class STL10(dsets.STL10):
-    num_classes = 10
-
-    def __init__(self, num_labels, num_iters, batch_size, save_path=None, **kwargs):
+    def __init__(self, num_labels, iteration, bs, save_path, **kwargs):
         super(STL10, self).__init__(**kwargs)
-        labels_per_class = num_labels // self.num_classes
+        labels_per_class = num_labels // 10
 
         self.label_indices, self.unlabel_indices = get_class_balanced_labels(
             self.labels, labels_per_class, save_path)
-        self.repeated_label_indices = get_repeated_indices(
-            self.label_indices, num_iters, batch_size)
-        self.repeated_unlabel_indices = get_repeated_indices(
-                self.unlabel_indices, num_iters, batch_size)
+        total_num = iteration * bs
+        num_of_labeld = total_num // len(labeled_index) + 1
+        num_of_unlabeld = total_num // len(unlabeled_index) + 1
+        self.reformed_labeled_index = [item for i in range(num_of_labeld) for item in random.shuffle(labeled_index)][:total_num]
+        self.reformed_unlabeled_index = [item for i in range(num_of_unlabeld) for item in random.shuffle(unlabeled_index)][:total_num]
 
     def __len__(self):
         return len(self.repeated_label_indices)
 
-    def __getitem__(self, idx):
-        label_idx = self.repeated_label_indices[idx]
-        label_img, label_target = self.data[label_idx], int(
-            self.labels[label_idx])
-        label_img = Image.fromarray(np.transpose(label_img, (1, 2, 0)))
+    def __getitem__(self, index):
+        labeled_index = self.repeated_label_indices[index]
+        labeled_image, labeled_class = self.data[labeled_index], int(self.labels[labeled_index])
+        labeled_image = self.transform(Image.fromarray(np.transpose(labeled_image, (1, 2, 0))))
 
-        if self.transform is not None:
-            label_img = self.transform(label_img)
-        # if self.target_transform is not None:
-        #     label_target = self.target_transform(label_target)
+        unlabeled_index = self.repeated_unlabel_indices[index]
+        unlabeled_image, unlabeled_class = self.data[unlabeled_index], int(
+                self.labels[unlabeled_index])
+        unlabeled_image = self.transform(Image.fromarray(np.transpose(unlabeled_image, (1, 2, 0))))
 
-        unlabel_idx = self.repeated_unlabel_indices[idx]
-        unlabel_img, unlabel_target = self.data[unlabel_idx], int(
-                self.labels[unlabel_idx])
-        unlabel_img = Image.fromarray(np.transpose(unlabel_img, (1, 2, 0)))
-
-        if self.transform is not None:
-            unlabel_img = self.transform(unlabel_img)
-        # if self.target_transform is not None:
-        #     unlabel_target = self.target_transform(unlabel_target)
-        return label_img, label_target, unlabel_img, unlabel_target
+        return labeled_image, labeled_class, unlabeled_image, unlabeled_class
 
 
 train_dset = {
@@ -177,12 +128,12 @@ test_dset = {
 }
 
 
-def dataloader(dset, path, num_iters, num_labels=4000, bs=100, save_path=None):
+def dataloader(dset, path, iteration, num_labels=4000, bs=100, save_path=None):
     train_dataset = train_dset[dset](
         root=path,
         num_labels=num_labels,
-        num_iters=num_iters,
-        batch_size=bs,
+        iteration=iteration,
+        bs=bs,
         transform=parameters.train_transform[dset],
         save_path=save_path,
         **parameters.train_kwargs[dset]

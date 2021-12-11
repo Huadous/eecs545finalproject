@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from utils import make_folder
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', type=str, default='svhn', choices=['svhn', 'cifar10'], help='Path to checkpoint file')
+parser.add_argument('--dataset', type=str, default='mnist', choices=["mnist", "fmnist", "stl10"])
 parser.add_argument('--data-path', type=str, default='./data', help='Data path')
 parser.add_argument('--checkpoint-path', type=str, help='Path to checkpoint file')
 parser.add_argument('--index-path', type=str, help='Path to indices file')
