@@ -62,7 +62,7 @@ model.cuda()
 optimizer = SGD(model.parameters(), lr=0.1, momentum=0.9,
                 weight_decay=1e-4)
 
-beta_distribution = Beta(torch.tensor([1]), torch.tensor([1]))
+beta_distribution = Beta(torch.tensor([1.0]), torch.tensor([1.0]))
 
 
 def BatchSampler(data_loader):
