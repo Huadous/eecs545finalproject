@@ -130,8 +130,7 @@ def improved_training_protocol(labeled_image, unlabeled_image, labeled_class_mat
 
 def log_info(iter, learning_rate, labeled_loss, labeled_accuracy, unlabeled_loss, unlabeled_accuracy):
     if iter % 100 == 0:
-        logger.info("{'Iteration': {0:05d}, 'Labeled': {'Loss': {labeled_loss.val:.3f}, 'Loss avg': {labeled_loss.avg:.3f}, 'Acc': {labeled_accuracy.val:.3f}, 'Acc avg': {labeled_accuracy.avg:.3f}}, 'Unlabeled': {'Loss': {unlabeled_loss.val:.3f}, 'Loss avg': {unlabeled_loss.avg:.3f}, 'Acc': {unlabeled_accuracy.val:.3f}, 'Acc avg': {unlabeled_accuracy.avg:.3f} \}\}"
-                    "Learning Rate: {1:.4f}".format(iter, learning_rate, labeled_loss=labeled_loss,
+        logger.info("['Train': 'Iteration': {0:05d}, \n\t'Labeled': ['Loss': {labeled_loss.val:.3f}, 'Loss avg': {labeled_loss.avg:.3f}, 'Acc': {labeled_accuracy.val:.3f}, 'Acc avg': {labeled_accuracy.avg:.3f}], \n\t'Unlabeled': ['Loss': {unlabeled_loss.val:.3f}, 'Loss avg': {unlabeled_loss.avg:.3f}, 'Acc': {unlabeled_accuracy.val:.3f}, 'Acc avg': {unlabeled_accuracy.avg:.3f}]\n]".format(iter, labeled_loss=labeled_loss,
                                                     labeled_accuracy=labeled_accuracy, unlabeled_loss=unlabeled_loss,  unlabeled_accuracy=unlabeled_accuracy))
 
 
@@ -153,7 +152,7 @@ def test_eval(test_loader, model):
         test_accuracy.update(test_accuracy_first.item(), test_image.size(0))
 
         if i % 400 == 0:
-            logger.info("{'Test': {'Loss': {test_loss.val:.3f}, 'Loss avg': {test_loss.avg:.3f}, 'Acc': {test_accuracy.val:.3f}, 'Acc avg': {test_accuracy.avg:.3f}\}\}"
+            logger.info("['Test': \n\t['Loss': {test_loss.val:.3f}, 'Loss avg': {test_loss.avg:.3f}, 'Acc': {test_accuracy.val:.3f}, 'Acc avg': {test_accuracy.avg:.3f}]\n]"
                         .format(test_loss=test_loss, test_accuracy=test_accuracy))
     return test_accuracy.avg
 
@@ -163,7 +162,7 @@ def save_check_point(iter, best_test_accuracy, labeled_loss, labeled_accuracy, u
         test_accuracy = test_eval(test_loader, model)
         if test_accuracy > best_test_accuracy:
             best_test_accuracy = test_accuracy
-        logger.info("{'Best accuracy': %.5f}" % best_test_accuracy)
+        logger.info("['Best accuracy': %.5f]" % best_test_accuracy)
         save_checkpoint({
             'Iteration': iter + 1,
             'Model': model.state_dict(),
