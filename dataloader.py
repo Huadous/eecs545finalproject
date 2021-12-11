@@ -113,6 +113,7 @@ class STL10(dsets.STL10):
     def __init__(self, num_labels, iteration, bs, **kwargs):
         super(STL10, self).__init__(**kwargs)
         labels_per_class = num_labels // 10
+        print(self.labels)
         class_index = list(range(len(self.labels)))
         random.shuffle(class_index)
         shuffled_class_index = class_index
