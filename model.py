@@ -1,15 +1,11 @@
-import torch, math
+import torch
 from torch import nn
-
 from typing import Union, List, Dict, Any, cast
 
-####################################################################
-###################### ConvLarge Architecture ######################
-####################################################################
 class ConvLarge(nn.Module):
-    def __init__(self, num_classes):
+    def __init__(self, num_classes, input_channel = 1):
         super().__init__()
-        self.block1 = self.conv_block(1, out_dim=128)
+        self.block1 = self.conv_block(input_channel, out_dim=128)
         self.block2 = self.conv_block(128, out_dim=128)
         self.block3 = self.conv_block(128, 128)
         self.block4 = self.conv_block(128, 256)
@@ -40,14 +36,7 @@ class ConvLarge(nn.Module):
         z = self.fc(z)
         return z
 
-
-######################################################################
-###################### Shake-Shake Architecture ######################
-######################################################################
-
-
-class VGG(nn.Module):
-
+class VGG_modifed(nn.Module):
     def __init__(
         self,
         features: nn.Module,

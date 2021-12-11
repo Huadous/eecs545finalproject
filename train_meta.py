@@ -15,16 +15,17 @@ from model import ConvLarge
 parser = argparse.ArgumentParser()
 # Basic configuration
 parser.add_argument('--dataset', type=str, default='mnist', choices=["mnist", "fmnist", "stl10"])
-parser.add_argument('--data-path', type=str, default='./data', help='Data path')
-parser.add_argument('--num-label', type=int, default=4000, help='Number of labeled data')
+
+# parser.add_argument('--data-path', type=str, default='./data', help='Data path')
+# parser.add_argument('--num-label', type=int, default=4000, help='Number of labeled data')
 parser.add_argument('-a', '--architecture', type=str, default='convlarge', choices=['convlarge', 'vgg16'], help='Network architecture')
-parser.add_argument('--mix-up', action='store_true', help='Use mix-up augmentation')
-parser.add_argument('--alpha', type=float, default=1., help='Concentration parameter of Beta distribution')
+# parser.add_argument('--mix-up', action='store_true', help='Use mix-up augmentation')
+# parser.add_argument('--alpha', type=float, default=1., help='Concentration parameter of Beta distribution')
 parser.add_argument('--weight', type=float, default=1., help='re-weighting scalar for the additional loss')
 # Training setting
-parser.add_argument('--total-steps', type=int, default=50000, help='Start step (for resume)')
-parser.add_argument('--start-step', type=int, default=0, help='Start step (for resume)')
-parser.add_argument('--batch-size', type=int, default=128, help='Batch size')
+# parser.add_argument('--total-steps', type=int, default=50000, help='Start step (for resume)')
+# parser.add_argument('--start-step', type=int, default=0, help='Start step (for resume)')
+# parser.add_argument('--batch-size', type=int, default=128, help='Batch size')
 parser.add_argument('--epsilon', type=float, default=1e-2, help='epsilon for gradient estimation')
 parser.add_argument('--lr', type=float, default=0.1, help='Maximum learning rate')
 parser.add_argument('--warmup', type=int, default=4000, help='Warmup iterations')
@@ -32,15 +33,21 @@ parser.add_argument('--gamma', type=float, default=0.1, help='Learning rate anne
 parser.add_argument('--milestones', type=eval, default=[300000, 350000], help='Learning rate annealing steps')
 parser.add_argument('--weight-decay', type=float, default=1e-4, help='Weight decay')
 parser.add_argument('--momentum', type=float, default=0.9, help='Momentum for SGD optimizer')
-parser.add_argument('--num-workers', type=int, default=4, help='Number of workers')
-parser.add_argument('--resume', type=str, default=None, help='Resume model from a checkpoint')
+# parser.add_argument('--num-workers', type=int, default=4, help='Number of workers')
+# parser.add_argument('--resume', type=str, default=None, help='Resume model from a checkpoint')
 parser.add_argument('--seed', type=int, default=1234, help='Random seed for reproducibility')
 parser.add_argument('--print-freq', type=int, default=100, help='Print and log frequency')
 parser.add_argument('--test-freq', type=int, default=400, help='Test frequency')
-parser.add_argument('--save-path', type=str, default='./results/tmp', help='Save path')
-parser.add_argument('--gpu', action='store_true', help='Use GPU')
+# parser.add_argument('--save-path', type=str, default='./results/tmp', help='Save path')
+# parser.add_argument('--gpu', action='store_true', help='Use GPU')
 args = parser.parse_args()
-args.num_classes = 100 if args.dataset == 'cifar100' else 10
+
+num_classes = dataloader.train_dset[args.dataset].num_classes
+data_path = './data/' + args.dataset
+result_path = './results/' +  args.dataset
+num_of_labeled_data = 4000
+gamma = 1
+batch_size = 100
 
 # Set random seed
 random.seed(args.seed)
