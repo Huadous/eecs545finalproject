@@ -42,7 +42,7 @@ writer = SummaryWriter(log_dir=result_path)
 train_loader, test_loader = dataloader(
     dset=args.dataset,
     path=data_path,
-    num_iters=args.iteration,
+    iteration=args.iteration,
     save_path=result_path
 )
 
