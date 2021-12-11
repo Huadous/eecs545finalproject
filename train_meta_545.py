@@ -235,7 +235,7 @@ if __name__ == "__main__":
         unlabeled_accuracy_first, = accuracy(
             unlabeled_prediction_iter, unlabeled_class)
 
-        labeled_loss.update(labeled_loss_iter.item(), labeled_image(0))
+        labeled_loss.update(labeled_loss_iter.item(), labeled_image.size(0))
         labeled_accuracy.update(
             labeled_accuracy_first.item(), labeled_image.size(0))
         unlabeled_loss.update(unlabeled_loss_iter.item(),
