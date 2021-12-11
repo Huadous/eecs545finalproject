@@ -147,7 +147,7 @@ def test_eval(test_loader, model):
         test_loss = F.cross_entropy(
             test_prediction, test_class, reduction='mean')
 
-        test_accuracy_first, = accuracy(test_prediction, test_class, topk=(1,))
+        test_accuracy_first, = accuracy(test_prediction, test_class)
         test_loss.update(test_loss.item(), test_image.size(0))
         test_accuracy.update(test_accuracy_first.item(), test_image.size(0))
 
